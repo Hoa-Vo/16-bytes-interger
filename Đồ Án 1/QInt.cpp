@@ -125,7 +125,7 @@ string QInt::addString(string num1,string num2){
 }
 //Chuyển từ 2-->10
 string QInt::binToDec(){
-    int exp = 127, count = 0;
+    int exp = 127;
     string result = "0";
     QInt temp = *this;
     if (getBit(a[0],0)) {
@@ -392,9 +392,7 @@ string QInt::multiplyResult(int* bit){
     string result = "0";
     int* temp;
     initArray(temp);
-    for (int i = 0; i < 8; i++) {
-        temp[i] = bit[i];
-    }
+    temp = bit;
     if (getBit(bit[0],0)) {
         tranForCal256bytes(temp);
     }

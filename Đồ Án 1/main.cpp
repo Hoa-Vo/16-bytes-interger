@@ -3,7 +3,8 @@ int main(){
 	QInt a, b, c, d;
 	cin >> a;
 	cin >> b;
-	string s = a * b;
-	cout << s;
+	c = a - b;
+	cout << c << endl;
+	cout << a * b;
 	return 0;
 }

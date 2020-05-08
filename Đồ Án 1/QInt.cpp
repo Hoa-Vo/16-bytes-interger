@@ -284,3 +284,148 @@ QInt QInt::negativeToPositve() {
     transForCal(temp);
     return temp;
 }
+string QInt::operator*(QInt b) {
+    int k = 128;
+    QInt temp;
+    bool q = 0, result[257] = { 0 };
+    while (k > 0) {
+        if (b.getBit(b.a[3], 31) && q == 0) {
+            temp = temp - *this;
+        }
+        else if (b.getBit(b.a[3], 31) == 0 && q) {
+            temp = temp + *this;
+        }
+        shiftRight(temp, b, q,result);
+        k--;
+    }
+    int* bit;
+    initArray(bit);
+    transferTo256bytes(result, bit);
+    return multiplyResult(bit);
+}
+void QInt::shiftRight(QInt& temp, QInt& q, bool& q1,bool result[]){
+    combineArray(temp, q, q1, result);
+    for (int i = 256; i > 0; i--) {
+        result[i] = result[i - 1];
+    }
+    if (temp.getBit(temp.a[0], 0)) {
+        result[0] = 1;
+    }
+    else
+        result[0] = 0;
+    splitArray(result, temp, q, q1);
+}
+void QInt::combineArray(QInt temp, QInt q,bool q1, bool result[]) {
+    int index = 0;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 32; j++) {
+            result[index++] = temp.getBit(temp.a[i], j);
+        }
+    }
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 32; j++) {
+            result[index++] = q.getBit(q.a[i], j);
+        }
+    }
+    result[256] = q1;
+}
+void QInt::splitArray(bool result[], QInt& temp, QInt& q, bool& q1){
+    q1 = result[256];
+    int index = 0;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 32; j++) {
+            if (result[index]&& temp.getBit(temp.a[i], j)==0) {
+                temp.setBit(temp.a[i], j);
+            }
+            else if (result[index] == 0 && temp.getBit(temp.a[i], j))
+                reverseBitValue(temp.a[i], j);
+            index++;
+        }
+       
+    }
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 32; j++) {
+            if (result[index]&&q.getBit(q.a[i], j)==0) {
+                q.setBit(q.a[i], j);
+            }
+            else if (result[index] == 0 && q.getBit(q.a[i], j))
+                reverseBitValue(q.a[i], j);
+            index++;
+        }
+    }
+}
+int* QInt::subBit256bytes(int* bit1, int* bit2){
+    int* d;
+    initArray(d);
+    int carryBit = 0;
+    for (int i = 7; i >= 0; i--) {
+        for (int j = 31; j >= 0; j--) {
+            int temp = getBit(bit1[i],j) - getBit(bit2[i],j) - carryBit;
+            if (temp == 0) {
+                carryBit = 0;
+            }
+            else if (temp < 0) {
+                carryBit = 1;
+                setBit(d[i], j);
+            }
+            else {
+                carryBit = 0;
+                setBit(d[i], j);
+            }
+        }
+    }
+    return d;
+}
+void QInt::tranForCal256bytes(int*& bit){
+    int* temp1;
+    initArray(temp1);
+    setBit(temp1[7], 31);
+    bit = subBit256bytes(bit, temp1);
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 32; j++) {
+            reverseBitValue(bit[i], j);
+        }
+    }
+}
+string QInt::multiplyResult(int* bit){
+    int exp = 255, count = 0;
+    string result = "0";
+    int* temp;
+    initArray(temp);
+    for (int i = 0; i < 8; i++) {
+        temp[i] = bit[i];
+    }
+    if (getBit(bit[0],0)) {
+        tranForCal256bytes(temp);
+    }
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 32; j++) {
+            if (getBit(temp[i], j)) {
+                string s1 = power(2, exp);
+                result = addString(result, s1);
+            }
+            exp--;
+        }
+    }
+    if (getBit(bit[0], 0)) {
+        return result.insert(0, "-");
+    }
+    return result;
+}
+void QInt::transferTo256bytes(bool result[], int*& bit){
+    int index = 0;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 32; j++) {
+            if (result[index++])
+                setBit(bit[i], j);
+        }
+    }
+  
+}
+void QInt::initArray(int*& bit){
+    bit = new int[8];
+    for (int i = 0; i < 8; i++) {
+        bit[i] = 0;
+    }
+}
+

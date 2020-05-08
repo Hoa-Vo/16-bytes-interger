@@ -2,9 +2,8 @@
 int main(){
 	QInt a, b, c, d;
 	cin >> a;
-	cout << a << endl;
 	cin >> b;
-	cout << b << endl;
-	c = a - b;
+	string s = a * b;
+	cout << s;
 	return 0;
 }

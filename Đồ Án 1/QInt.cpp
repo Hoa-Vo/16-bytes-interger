@@ -181,40 +181,36 @@ QInt QInt::operator-(QInt b){
     return c;
 }
 bool QInt::operator>(QInt b){
-    string num1 = binToDec();
-    string num2 = b.binToDec();
-    int l1 = num1.length();
-    int l2 = num2.length();
-    if (num2[0] == '-' && num1[0] != '-')
+    if (getBit(a[0], 0) && b.getBit(b.a[0], 0) == 0)
+        return false;
+    else if (getBit(a[0], 0) == 0 && b.getBit(b.a[0], 0))
         return true;
-    else if (num1[0] == '-' && num2[0] != '-')
-        return false;
-    if (num1[0] == '-') {
-        if (l1 < l2)
-            return true;
-        else if (l1 > l2)
-            return false;
-        else {
-            for (int i = 0; i < num1.length(); i++) {
-                if (num2[i] - '0' > num1[i] - '0')
+    else if (getBit(a[0], 0) == 0) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 32; j++) {
+                if (getBit(a[i], j) == 0 && b.getBit(b.a[i], j))
+                    return false;
+                else if (getBit(a[i], j) && b.getBit(b.a[i], j)==1)
                     return true;
             }
         }
-        return false;
     }
-    else {
-        if (l1 > l2)
-            return true;
-        else if (l1 < l2)
-            return false;
-        else {
-            for (int i = 0; i < num1.length(); i++) {
-                if (num2[i] - '0' < num1[i] - '0')
+    else
+    {
+        QInt num1 = *this;
+        QInt num2 = b;
+        transForCal(num1);
+        transForCal(num2);
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 32; j++) {
+                if (num1.getBit(num1.a[i], j) == 0 && num2.getBit(num2.a[i], j))
                     return true;
+                else if (num1.getBit(num1.a[i], j) && num2.getBit(num2.a[i], j)==1)
+                    return false;
             }
         }
-        return false;
     }
+    return false;
 }
 //Hàm trừ 2 dãy bit
 QInt QInt::subBit(QInt b, QInt c){
@@ -229,7 +225,7 @@ QInt QInt::subBit(QInt b, QInt c){
             else if (temp < 0) {
                 carryBit = 1;
                 d.setBit(d.a[i], j);
-         ;   }
+            }
             else {
                 carryBit = 0;
                 d.setBit(d.a[i], j);
@@ -248,24 +244,23 @@ void QInt::outputBin() {
     cout << endl;
 }
 bool QInt::operator<(QInt b){
-    if (*this > b||*this==b)
+    if (*this > b)
         return false;
     else
         return true;
 }
 bool QInt::operator==(QInt b) {
-    string num1 = binToDec();
-    string num2 = b.binToDec();
-    int l1 = num1.length();
-    int l2 = num2.length();
-    if (num1[0] == '-' && num2[0] != '-' || num1[0] != '-' && num2[0] == '-')
+    if (getBit(a[0], 0) && b.getBit(b.a[0], 0) == 0)
         return false;
-    if (l1 > l2 || l2 > l1)
+    else if (getBit(a[0], 0) == 0 && b.getBit(b.a[0], 0))
         return false;
-    for (int i = 0; i < l1; i++) {
-        if (num1[i] - '0' > num2[i] - '0' || num1[i] - '0' < num2[i] - '0')
-            return false;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 32; j++) {
+            if (getBit(a[i], j) != b.getBit(b.a[i], j))
+                return false;
+        }
     }
+    return true;
 }
 //Chuyển đổi về số không dấu để tính toán
 void QInt::transForCal(QInt& temp) {
@@ -298,9 +293,10 @@ QInt QInt::negativeToPositve() {
     transForCal(temp);
     return temp;
 }
-string QInt::operator*(QInt b) {
+QInt QInt::operator*(QInt b) {
     int k = 128;
     QInt temp;
+    QInt multiplyResult;
     bool q = 0, result[257] = { 0 };
     while (k > 0) {
         if (b.getBit(b.a[3], 31) && q == 0) {
@@ -312,10 +308,10 @@ string QInt::operator*(QInt b) {
         shiftRight(temp, b, q,result);
         k--;
     }
-    int* bit;
-    initArray(bit);
-    transferTo256bytes(result, bit);
-    return multiplyResult(bit);
+    if (toQInt(result, multiplyResult))
+        return multiplyResult;
+    else
+        cout << "Result out range!!!" << endl;
 }
 void QInt::shiftRight(QInt& temp, QInt& q, bool& q1,bool result[]){
     combineArray(temp, q, q1, result);
@@ -368,76 +364,23 @@ void QInt::splitArray(bool result[], QInt& temp, QInt& q, bool& q1){
         }
     }
 }
-int* QInt::subBit256bytes(int* bit1, int* bit2){
-    int* d;
-    initArray(d);
-    int carryBit = 0;
-    for (int i = 7; i >= 0; i--) {
+bool QInt::toQInt(bool result[], QInt& temp){
+    int index = 255;
+    if (result[127] == 0) {
+        for (int i = 0; i < 127; i++)
+            if (result[i])
+                return false;
+    }
+    else if (result[127]) {
+        for (int i = 0; i < 127; i++)
+            if (result[i]==0)
+                return false;
+    }
+    for (int i = 3; i >= 0; i--) {
         for (int j = 31; j >= 0; j--) {
-            int temp = getBit(bit1[i],j) - getBit(bit2[i],j) - carryBit;
-            if (temp == 0) {
-                carryBit = 0;
-            }
-            else if (temp < 0) {
-                carryBit = 1;
-                setBit(d[i], j);
-            }
-            else {
-                carryBit = 0;
-                setBit(d[i], j);
-            }
+            if (result[index--])
+                temp.setBit(temp.a[i], j);
         }
     }
-    return d;
+    return true;
 }
-void QInt::tranForCal256bytes(int*& bit){
-    int* temp1;
-    initArray(temp1);
-    setBit(temp1[7], 31);
-    bit = subBit256bytes(bit, temp1);
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 32; j++) {
-            reverseBitValue(bit[i], j);
-        }
-    }
-}
-string QInt::multiplyResult(int* bit){
-    int exp = 255, count = 0;
-    string result = "0";
-    int* temp;
-    initArray(temp);
-    temp = bit;
-    if (getBit(bit[0],0)) {
-        tranForCal256bytes(temp);
-    }
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 32; j++) {
-            if (getBit(temp[i], j)) {
-                string s1 = power(2, exp);
-                result = addString(result, s1);
-            }
-            exp--;
-        }
-    }
-    if (getBit(bit[0], 0)) {
-        return result.insert(0, "-");
-    }
-    return result;
-}
-void QInt::transferTo256bytes(bool result[], int*& bit){
-    int index = 0;
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 32; j++) {
-            if (result[index++])
-                setBit(bit[i], j);
-        }
-    }
-  
-}
-void QInt::initArray(int*& bit){
-    bit = new int[8];
-    for (int i = 0; i < 8; i++) {
-        bit[i] = 0;
-    }
-}
-

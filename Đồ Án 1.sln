@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Đồ Án 1", "Đồ Án 1\Đồ Án 1.vcxproj", "{DF808E2E-A782-416A-9EAE-40C2E61CC024}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QInt", "Đồ Án 1\Đồ Án 1.vcxproj", "{DF808E2E-A782-416A-9EAE-40C2E61CC024}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QFloat", "QFloat\QFloat.vcxproj", "{71C78D5A-996A-4669-8257-74C235B181AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,14 @@ Global
 		{DF808E2E-A782-416A-9EAE-40C2E61CC024}.Release|x64.Build.0 = Release|x64
 		{DF808E2E-A782-416A-9EAE-40C2E61CC024}.Release|x86.ActiveCfg = Release|Win32
 		{DF808E2E-A782-416A-9EAE-40C2E61CC024}.Release|x86.Build.0 = Release|Win32
+		{71C78D5A-996A-4669-8257-74C235B181AD}.Debug|x64.ActiveCfg = Debug|x64
+		{71C78D5A-996A-4669-8257-74C235B181AD}.Debug|x64.Build.0 = Debug|x64
+		{71C78D5A-996A-4669-8257-74C235B181AD}.Debug|x86.ActiveCfg = Debug|Win32
+		{71C78D5A-996A-4669-8257-74C235B181AD}.Debug|x86.Build.0 = Debug|Win32
+		{71C78D5A-996A-4669-8257-74C235B181AD}.Release|x64.ActiveCfg = Release|x64
+		{71C78D5A-996A-4669-8257-74C235B181AD}.Release|x64.Build.0 = Release|x64
+		{71C78D5A-996A-4669-8257-74C235B181AD}.Release|x86.ActiveCfg = Release|Win32
+		{71C78D5A-996A-4669-8257-74C235B181AD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -248,10 +248,24 @@ void QInt::outputBin() {
     cout << endl;
 }
 bool QInt::operator<(QInt b){
-    if (*this > b)
+    if (*this > b||*this==b)
         return false;
     else
         return true;
+}
+bool QInt::operator==(QInt b) {
+    string num1 = binToDec();
+    string num2 = b.binToDec();
+    int l1 = num1.length();
+    int l2 = num2.length();
+    if (num1[0] == '-' && num2[0] != '-' || num1[0] != '-' && num2[0] == '-')
+        return false;
+    if (l1 > l2 || l2 > l1)
+        return false;
+    for (int i = 0; i < l1; i++) {
+        if (num1[i] - '0' > num2[i] - '0' || num1[i] - '0' < num2[i] - '0')
+            return false;
+    }
 }
 //Chuyển đổi về số không dấu để tính toán
 void QInt::transForCal(QInt& temp) {

@@ -22,6 +22,7 @@ public:
 	string operator*(QInt b);
 	bool operator>(QInt b);
 	bool operator<(QInt b);
+	bool operator==(QInt b);
 	QInt subBit(QInt b, QInt c);
 	void transForCal(QInt& temp);
 	QInt negativeToPositve();
